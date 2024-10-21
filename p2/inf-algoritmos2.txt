@@ -1,0 +1,130 @@
+/*
+Grupo 1.2
+Iván Afonso Cerdeira ivan.afonso@udc.es
+Minerva Antía Lago López minerva.lago.lopez@udc.es
+*/
+
+En esta práctica se nos proprocionan dos pseudocódigos, uno para la ordenación por inserción y otro para la ordenación rápida, que pasaremos a lenguaje C.
+Estos códigos nos sirven para ordenar ascendentemente un vector de números enteros. La práctica consiste en ver que algoritmo de ordenación es más eficaz,
+esto lo haremos midiendo los tiempos de ejecución en cada uno para tres tipos de vectores: ordenado ascendentemente, ordenado descendentemente y desordenado.
+También debemos sacar las cotas para cada uno de estos vectores en cada algoritmo.
+
+Para la medición de dichos tiempos de ejecución hemos utilizado un portátil con las siguientes características:
+	Sistema operativo: Arch Linux
+            Kernel: Linux 6.10.10-arch1-1
+            Architecture: x86-64
+            Hardware Model: ROG Strix G513IC_G513IC
+            GPU: NVIDIA Corporation GA107M [GeForce RTX 3050 Mobile]
+            CPU:  	Model name: AMD Ryzen 7 4800H with Radeon Graphics
+                  	CPU family:           23
+                  	Model:                96
+        		Thread(s) per core:   2
+        		Core(s) per socket:   8
+        		Socket(s):            1
+       		 Stepping:             1
+        		CPU(s) scaling MHz:   43%
+        		CPU max MHz:          4300.0000
+        		CPU min MHz:          400.0000
+            Mem: total:15Gi, used:4.1Gi, free:9.3Gi, shared: 261Mi,
+                 buf/cache: 2.2Gi available: 10Gi
+
+
+A continuación se muestran las tablas de cada algoritmo y de cada vector, utilizando la unidad de microsegundos(µs), y sus respectivas cotas.
+Como podemos observar, algunas mediciones no cumplen el umbral de confianza, ya que no superan los 500µs, son las marcadas con un '*'. Por lo que ejecutaremos el bucle k veces,
+en los siguientes casos y solo si no cumplen el umbral de confianza, y haremos el promedio para obtener el tiempo de ejecución:
+
+Medición Rápida Aleatoria: k=100
+Medición Rápida Descendente: k=100
+Medición Rápida Ascendente: k=100
+Medición Inserción Aleatorio: k=100
+Medición Inserción Descendente: k=100
+Medición Inserción Ascendente: k=1000
+
+Rápida Aleatoria
+n	          t(n)       t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+500	        35.130*     0.07026000     0.03774080     0.02027282
+1000	        74.830*     0.07483000     0.03750384     0.01879645
+2000	       159.240*     0.07962000     0.03723224     0.01741070
+4000	       357.290*     0.08932250     0.03897220     0.01700391
+8000	       725.000      0.09062500     0.03689258     0.01501862
+16000	      1533.000      0.09581250     0.03639236     0.01382287
+32000	      3223.000      0.10071875     0.03569401     0.01264970
+64000	      6811.000      0.10642187     0.03518948     0.01163576
+
+Cota subestimada: n,  cota ajustada: n^1.1, cota sobreestimada: n^1.2
+Constante a la que tiende la cota ajustada: 0.035
+
+Rápida Descendente
+n	          t(n)       t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+500	        19.870*     0.07398179     0.02912590     0.02134671
+1000	        41.600*     0.08300291     0.02945054     0.02084939
+2000	        86.380*     0.09236048     0.02953464     0.02019669
+4000	       180.500*     0.10342445     0.02980672     0.01968844
+8000	       376.850*     0.11571443     0.03005551     0.01917651
+16000	       786.000      0.12933455     0.03027587     0.01865909
+32000	      1578.000      0.13914641     0.02935618     0.01747600
+64000	      3312.000      0.15650505     0.02975784     0.01711167
+
+Cota subestimada: n^0.9,  cota ajustada: n^1.05,  cota sobreestimada: n^1.1  
+Constante a la que tiende la cota ajustada: 0.029
+
+Rápida Ascendente
+n	          t(n)       t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+500	        18.480*     0.06880642     0.01985340     0.01066444
+1000	        39.350*     0.07851357     0.01972172     0.00988427
+2000	        81.930*     0.08760239     0.01915623     0.00895792
+4000	       171.960*     0.09853113     0.01875692     0.00818381
+8000	       357.520*     0.10977902     0.01819288     0.00740615
+16000	       727.000      0.11962623     0.01725848     0.00655527
+32000	      1580.000      0.13932277     0.01749815     0.00620122
+64000	      3309.000      0.15636329     0.01709617     0.00565302
+
+Cota subestimada: n^0.9,  cota ajustada: n^1.1,  cota sobreestimada: n^1.2  
+Constante a la que tiende la cota ajustada: 0.017
+
+Inserción Aleatorio
+n	          t(n)       t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+500	       168.750*     0.00125661     0.00067500     0.00036258
+1000	       637.000      0.00127098     0.00063700     0.00031926
+2000	      2469.000      0.00131997     0.00061725     0.00028864
+4000	     10252.000      0.00146857     0.00064075     0.00027956
+8000	     39768.000      0.00152638     0.00062137     0.00025296
+16000	    161094.000      0.00165673     0.00062927     0.00023902
+32000	    638690.000      0.00175997     0.00062372     0.00022104
+64000	   2550854.000      0.00188340     0.00062277     0.00020592
+
+Cota subestimada: n^1.9,  cota ajustada: n^2,  cota sobreestimada: n^2.1
+Constante a la que tiende la cota ajustada: 0.00062
+
+Inserción Descendente
+n	          t(n)       t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+500	       321.690*     0.00445956     0.00128676     0.00037128
+1000	      1261.000      0.00502013     0.00126100     0.00031675
+2000	      5030.000      0.00575061     0.00125750     0.00027498
+4000	     20049.000      0.00658241     0.00125306     0.00023854
+8000	     80006.000      0.00754329     0.00125009     0.00020717
+16000	    319798.000      0.00865884     0.00124921     0.00018022
+32000	   1277778.000      0.00993540     0.00124783     0.00015672
+64000	   5109731.000      0.01140970     0.00124749     0.00013640
+
+Cota subestimada: n^1.8, cota ajustada: n^2,  cota sobreestimada: n^2.2
+Constante de la cota ajustada: 0.0012
+
+Inserción Ascendente
+n	          t(n)       t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+500	         2.147*     0.00799391     0.00429400     0.00230656
+1000	         4.354*     0.00868737     0.00435400     0.00218217
+2000	         8.544*     0.00913554     0.00427200     0.00199769
+4000	        17.015*     0.00974940     0.00425375     0.00185595
+8000	        34.016*     0.01044485     0.00425200     0.00173095
+16000	        68.116*     0.01120834     0.00425725     0.00161703
+32000	       136.133*     0.01200407     0.00425416     0.00150764
+64000	       274.317*     0.01296256     0.00428620     0.00141728
+
+Cota subestimada: n^0.9,  cota ajustada: n,  cota sobreestimada: n^1.1
+Constante de la cota ajustada: 0.0042
+
+Podemos concluír, gracias a los tiempos de ejecución, que el algoritmo más eficaz es el de ordenación rápida, ya que salvo en el caso
+de que el vector ya esté ordenado ascendentemente, es decir que ya esté ordenado como queremos, es más rápido. También podemos observar
+que el mejor caso es cuando el vector está ordenado ascendentemente, como acabamos de explicar, y el peor caso sería el vector ordenado
+descendentemente, ya que está ordenado justo a la inversa de como lo queremos ordenar.

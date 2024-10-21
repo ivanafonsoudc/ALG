@@ -1,0 +1,133 @@
+Practica 1 
+
+Grupo 1.2
+Hecho por: Iván Afonso Cerdeira ivan.afonso@udc.es y Minerva Antía Lago López minerva.lago.lopez@udc.es
+
+
+En esta práctica se nos proporcionan 3 pseudocódigos, que hemos pasado a lenguaje C, que calculan la sucesión de Fibonacci de distintas formas,
+el primer programa utiliza la recursividad, el segundo un bucle for y el tercero un bucle while. Con la función test hemos validado 
+el funcionamiento de cada uno. Vamos a realizar una medición de los tiempos de ejecución de cada programa para determinar cuál es el 
+más eficiente. Para fib1 tomaremos los valores de las potencias de dos hasta el número 32, este incluído, sin embargo para fib2 y fib3 tomaremos 
+potencias de diez, desde 1000 hasta 100000000, ambos incluídos.
+
+Para la medición de dichos tiempos de ejecución hemos utilizado un portátil con las siguientes características:
+	Sistema operativo: Arch Linux
+        Kernel: Linux 6.10.10-arch1-1
+        Architecture: x86-64
+        Hardware Model: ROG Strix G513IC_G513IC  	
+        GPU: NVIDIA Corporation GA107M [GeForce RTX 3050 Mobile]
+        CPU:  	Model name: AMD Ryzen 7 4800H with Radeon Graphics
+              	CPU family:           23
+              	Model:                96
+    		Thread(s) per core:   2
+    		Core(s) per socket:   8
+    		Socket(s):            1
+   		 Stepping:             1
+    		CPU(s) scaling MHz:   43%
+    		CPU max MHz:          4300.0000
+    		CPU min MHz:          400.0000
+        Mem: total:15Gi, used:4.1Gi, free:9.3Gi, shared: 261Mi, 
+             buf/cache: 2.2Gi available: 10Gi
+
+
+
+Las cotas ajustadas utilizadas se pueden observar a continuacion:
+	fib1: O(φ^n) con φ = (1+√5)/2	fib2: O(n)	fib3: O(log(n))
+
+Las cotas subestimadas utilizadas son las siguientes:
+	fib1: 1,1^n    			fib2: n^0.8	fib3: √(log(n))
+
+Las cotas sobreestimadas usadas se muestran a continuación:
+        fib2: 2^n       		fib2: n*log(n)  fib3: n^0.5
+
+A continuación mostramos la primera medición, utilizando la unidad de microsegundos(µs):
+
+
+fib1
+				subestimada	ajustada	sobreestimada
+	n		t(n)	t(n)/f(n)	t(n)/g(n)	t(n)/h(n)
+           2          1.000       0.826446       0.381966       0.250000
+           4          1.000       0.683013       0.145898       0.062500
+           8          1.000       0.466507       0.021286       0.003906
+          16          8.000       1.741033       0.003625       0.000122
+          32      14302.000     677.377628       0.002936       0.000003
+
+fib2
+				subestimada	ajustada	sobreestimada
+	n		t(n)	t(n)/f(n)	t(n)/g(n)	t(n)/h(n)
+        1000          4.000       0.015924       0.004000       0.027631
+       10000         23.000       0.014512       0.002300       0.021184
+      100000        210.000       0.021000       0.002100       0.024177
+     1000000       2110.000       0.033441       0.002110       0.029151
+    10000000      21104.000       0.053011       0.002110       0.034016
+
+fib3
+				subestimada	ajustada	sobreestimada
+	n		t(n)	t(n)/f(n)	t(n)/g(n)	t(n)/h(n)
+        1000          2.000       0.760959       0.289530       0.063246
+       10000          1.000       0.329505       0.108574       0.010000
+      100000          1.000       0.294718       0.086859       0.003162
+     1000000          2.000       0.538080       0.144765       0.002000
+    10000000          2.000       0.498165       0.124084       0.000632
+
+Como podemos observar, algunas mediciones no cumplen el umbral de confianza:
+	En fib1 las 4 primeras filas, en fib2 en las 3 primeras filas  y en fib3 en toda la tabla.
+	
+Debido a que no superan los 500µs, hacemos un bucle de 10000 o 100000 iteraciones (dependiendo la implementacion del algoritmo)
+y calculamos el promedio, que será el tiempo que tomaremos, en microsegundos. Después de este cambio el resultado sería: 
+
+
+fib1
+				subestimada	ajustada	sobreestimada
+	n		t(n)	t(n)/f(n)	t(n)/g(n)	t(n)/h(n)
+           2        0.00642*       0.005306       0.002452     0.00160500
+           4        0.01721*       0.011755       0.002511     0.00107562
+           8        0.13376*       0.062400       0.002847     0.00052250
+          16        6.45130*       1.403991       0.002923     0.00009844
+          32    14282.00000      676.430379       0.002932     0.00000333
+
+*tiempo promedio (en µs) de 100000 ejecuciones del algoritmo
+
+En fib1 la Cte a la que tiende la cota ajustada es 0.0029
+
+fib2
+                                subestimada     ajustada        sobreestimada
+	n		t(n)	t(n)/f(n)	t(n)/g(n)	t(n)/h(n)
+        1000         2.1507*       0.008562       0.002151     0.01485651
+       10000        21.2407*       0.013402       0.002124     0.01956341
+      100000       212.4811*       0.021248       0.002125     0.02446279
+     1000000      2136.0000        0.033853       0.002136     0.02950993
+    10000000     21310.0000        0.053528       0.002131     0.03434766        
+
+*tiempo promedio (en µs) de 10000 ejecuciones del algoritmo
+
+En fib2 la Cte a la que tiende la cota ajustada es 0.0021
+
+
+fib3
+                                subestimada     ajustada        sobreestimada
+	n		t(n)	t(n)/f(n)	t(n)/g(n)	t(n)/h(n)
+        1000        0.03416*       0.012997       0.004945     0.00108023
+       10000        0.04509*       0.014857       0.004896     0.00045090
+      100000        0.05588*       0.016469       0.004854     0.00017671
+     1000000        0.06719*       0.018077       0.004863     0.00006719
+    10000000        0.07984*       0.019887       0.004953     0.00002525
+
+*tiempo promedio (en µs) de 100000 ejecuciones del algoritmo       
+     
+En fib3 la Cte a la que tienda la cota ajustada es 0.0049
+
+
+Analizando la tabla podemos concluir que el tercer programa es el más eficiente, ya que en las tablas observamos que de los tres programas 
+es el que tiene menor tiempo de ejecución, el segundo más eficiente sería el segundo programa y el menos eficiente el primero. El primer 
+programa utiliza la recursividad, por lo que podemos observar que en las primeras ejecuciones, n=2,4,8, es eficiente pero a partir de n=16 
+deja de serlo, llegando incluso a ser un problema ejecutarlo para enes mayores o iguales que 64. Esto no ocurre con los otros dos programas 
+al no utilizar la recursividad, percibimos que siguen siendo eficientes con enes mucho más elevados. Decimos que fib3 es más eficiente que
+fib2, debido a que en esta última los tiempos de ejecución se disparan a partir de n=10000, en cambio en fib3 el tiempo de ejecución de 
+n=10000000 sigue siendo ínfimo. 
+
+
+
+
+
+
