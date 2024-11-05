@@ -99,184 +99,6 @@ void imprimirArray(int v[], int n) {
     printf("\n");
 }
 
-/*
-void medicionesRapidaAleatorio(){
-    int i,j;
-    int k = 100;
-    double t1, t2,ta,tb,t,x,y,z;
-    int v[64000];
-    printf("\nRápida Aleatorio\n%s\t%15s%15s%15s%15s\n","n","t(n)","t(n)/f(n)","t(n)/g(n)","t(n)/h(n)");
-    for(i=500; i<=64000; i=i*2){
-        t1 = microsegundos();
-        aleatorio(v, i);
-        ordenacionRapida(v, i);
-        t2 = microsegundos();
-        t = (t2-t1);
-        if(t<500){
-            ta=microsegundos();
-            for(j=0; j<=k; j++){
-                aleatorio(v, i);
-                ordenacionRapida(v, i);
-            }
-            tb=microsegundos();
-            t = (tb-ta)/k;
-        }
-        y = t/pow(i,1);
-        x = t/pow(i,1.1);
-        z = t/pow(i,1.2);
-        printf("%d\t%15.3f%15.8f%15.8f%15.8f\n", i, t, y,x,z);
-    }
-    printf("\n");
-}
-
-void medicionesRapidaDescendente(){
-    int i,j;
-    int k = 100;
-    double t1, t2,ta,tb,t,x,y,z;
-    int v[64000];
-    printf("Rapida Descendente\n%s\t%15s%15s%15s%15s\n","n","t(n)","t(n)/f(n)","t(n)/g(n)","t(n)/h(n)");
-    for(i=500; i<=64000; i=i*2) {
-        t1 = microsegundos();
-        descendente(v, i);
-        ordenacionRapida(v, i);
-        t2 = microsegundos();
-        t = (t2-t1);
-        if(t<500){
-            ta=microsegundos();
-            for(j=0; j<=k; j++){
-                descendente(v, i);
-                ordenacionRapida(v, i);
-            }
-            tb=microsegundos();
-            t = (tb-ta)/k;
-        }
-        y = t/pow(i,0.90);
-        x = t/pow(i,1.05);
-        z = t/pow(i,1.10);
-        printf("%d\t%15.3f%15.8f%15.8f%15.8f\n", i, t, y,x,z);
-    }
-    printf("\n");
-}
-
-void medicionesRapidaAscendente(){
-    int i,j;
-    int k = 100;
-    double t1, t2,ta,tb,t,x,y,z;
-    int v[64000];
-    printf("Rapida Ascendente\n%s\t%15s%15s%15s%15s\n","n","t(n)","t(n)/f(n)","t(n)/g(n)","t(n)/h(n)");
-    for(i=500; i<=64000; i=i*2) {
-        t1 = microsegundos();
-        ascendente(v, i);
-        ordenacionRapida(v, i);
-        t2 = microsegundos();
-        t = (t2-t1);
-        if(t<500){
-            ta=microsegundos();
-            for(j=0; j<=k; j++){
-                ascendente(v, i);
-                ordenacionRapida(v, i);
-            }
-            tb=microsegundos();
-            t = (tb-ta)/k;
-        }
-        y = t/pow(i,0.90);
-        x = t/pow(i,1.10);
-        z = t/pow(i,1.20);
-        printf("%d\t%15.3f%15.8f%15.8f%15.8f\n", i, t, y,x,z);
-    }
-    printf("\n");
-}
-
-void medicionesInsercionAleatorio(){
-    int i,j;
-    int k = 100;
-    double t1, t2,ta,tb,t,x,y,z;
-    int v[64000];
-    printf("Insercion Aleatorio\n%s\t%15s%15s%15s%15s\n","n","t(n)","t(n)/f(n)","t(n)/g(n)","t(n)/h(n)");
-    for(i=500; i<=64000; i=i*2) {
-        t1 = microsegundos();
-        aleatorio(v, i);
-        ordenacionPorInsercion(v, i);
-        t2 = microsegundos();
-        t = (t2-t1);
-        if(t<500){
-            ta=microsegundos();
-            for(j=0; j<=k; j++){
-                aleatorio(v, i);
-                ordenacionPorInsercion(v, i);
-            }
-            tb=microsegundos();
-            t = (tb-ta)/k;
-        }
-        y = t/pow(i,1.9);
-        x = t/pow(i,2);
-        z = t/pow(i,2.1);
-        printf("%d\t%15.3f%15.8f%15.8f%15.8f\n", i, t, y,x,z);
-    }
-    printf("\n");
-}
-
-void medicionesInsercionDescendente(){
-    int i,j;
-    int k = 100;
-    double t1, t2,ta,tb,t,x,y,z;
-    int v[64000];
-    printf("Insercion Descendente\n%s\t%15s%15s%15s%15s\n","n","t(n)","t(n)/f(n)","t(n)/g(n)","t(n)/h(n)");
-    for(i=500; i<=64000; i=i*2){
-        t1 = microsegundos();
-        descendente(v, i);
-        ordenacionPorInsercion(v, i);
-        t2 = microsegundos();
-        t = (t2-t1);
-        if(t<500){
-            ta=microsegundos();
-            for(j=0; j<=k; j++){
-                descendente(v, i);
-                ordenacionPorInsercion(v, i);
-            }
-            tb=microsegundos();
-            t = (tb-ta)/k;
-        }
-        y = t/pow(i,1.8);
-        x = t/pow(i,2);
-        z = t/pow(i,2.2);
-        printf("%d\t%15.3f%15.8f%15.8f%15.8f\n", i, t, y,x,z);
-    }
-    printf("\n");
-}
-
-void medicionesInsercionAscendente(){
-    int i,j;
-    int k = 1000;
-    double t1, t2,ta,tb,t,x,y,z;
-    int v[64000];
-    printf("Insercion Ascendente\n%s\t%15s%15s%15s%15s\n","n","t(n)","t(n)/f(n)","t(n)/g(n)","t(n)/h(n)");
-    for(i=500; i<=64000; i=i*2) {
-        t1 = microsegundos();
-        ascendente(v, i);
-        ordenacionPorInsercion(v, i);
-        t2 = microsegundos();
-        t = (t2-t1);
-        if(t<500){
-            ta=microsegundos();
-            for(j=0; j<=k; j++){
-                ascendente(v, i);
-                ordenacionPorInsercion(v, i);
-            }
-            tb=microsegundos();
-            t = (tb-ta)/k;
-        }
-        y = t/pow(i,0.9);
-        x = t/pow(i,1);
-        z = t/pow(i,1.1);
-        printf("%d\t%15.3f%15.8f%15.8f%15.8f\n", i, t, y,x,z);
-    }
-    printf("\n");
-}
-
-*/
-
-
 void mediciones(void (*generarDatos)(int[], int), void (*ordenar)(int[], int, void (*)(int[], int)), const char* nombre, double (*f1)(int), double (*f2)(int), double (*f3)(int)) {
     int i, j;
     int k = 100;
@@ -305,9 +127,6 @@ void mediciones(void (*generarDatos)(int[], int), void (*ordenar)(int[], int, vo
 }
 
 // Funciones para calcular f(n), g(n) y h(n)
-
-
-
 double f1_rapida_aleatorio(int n) { return pow(n, 1); }
 double f2_rapida_aleatorio(int n) { return pow(n, 1.1); }
 double f3_rapida_aleatorio(int n) { return pow(n, 1.2); }
@@ -334,7 +153,7 @@ double f3_insercion_ascendente(int n) { return pow(n, 1.1); }
 
 
 
-/*
+
 void testaux(void(*ordenacion)(int[], int), void(*generador)(int[], int),int v[],int n, const char* nombre){
     printf("%s\n", nombre);
     generador(v, n);
@@ -356,7 +175,7 @@ void test(){
     testaux(ordenacionPorInsercion, aleatorio, v, n, "Insercion Aleatorio");
     testaux(ordenacionPorInsercion, ascendente, v, n, "Insercion Ascendente");
     testaux(ordenacionPorInsercion, descendente, v, n, "Insercion Descendente");
-}*/
+}
 
 
 int main() {
