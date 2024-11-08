@@ -1,0 +1,130 @@
+/*
+Grupo 1.2
+Iván Afonso Cerdeira ivan.afonso@udc.es
+Minerva Antía Lago López minerva.lago.lopez@udc.es
+*/
+
+En esta práctica nos piden construir un programa de consulta de sinónimos de una palabra dada con el objetivo de comparar varias implementaciones de diccionario de datos.
+Se usan dos dispersiones, A y B, y para cada una usaremos tablas de dispersión cerrada con exploración lineal, exploración cuadrática y exploración doble. Medimos los
+tiempos de cada uno de estes casos, para ello sacamos las cotas, y después en la conclusión los comparamos. Además también mediremos el número de colisiones y los compararemos.
+También nos piden implementar cuatro operaciones: inicializar, insertar, buscar y mostrar.
+
+***********Características portatil Iván tablas portátil Minerva, cambiar uno de los dos***********
+
+Para la medición de dichos tiempos de ejecución hemos utilizado un portátil con las siguientes características:
+	Sistema operativo: Arch Linux
+            Kernel: Linux 6.10.10-arch1-1
+            Architecture: x86-64
+            Hardware Model: ROG Strix G513IC_G513IC
+            GPU: NVIDIA Corporation GA107M [GeForce RTX 3050 Mobile]
+            CPU:  	Model name: AMD Ryzen 7 4800H with Radeon Graphics
+                  	CPU family:           23
+                  	Model:                96
+        		Thread(s) per core:   2
+        		Core(s) per socket:   8
+        		Socket(s):            1
+       		 Stepping:             1
+        		CPU(s) scaling MHz:   43%
+        		CPU max MHz:          4300.0000
+        		CPU min MHz:          400.0000
+            Mem: total:15Gi, used:4.1Gi, free:9.3Gi, shared: 261Mi,
+                 buf/cache: 2.2Gi available: 10Gi
+
+A continuación se muestran las mediciones de tiempos y sus respectivas cotas, en microsegundos (µs), para cada caso (se muestran con un "*" 
+los casos que no cumplen el umbral de confianza de 500µs y que por tanto se han calculado con un bucle de 1000 iteraciones y calculando 
+el promedio):
+
+Dispersión A exploración lineal:
+Insertando 19062 elementos... Numero total de colisiones: 172623183
+Buscando n elementos...
+    n	          t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+  125*	        19.888     0.00127283     0.00038067     0.00011385
+  250*	       102.900     0.00164640     0.00041405     0.00010413
+  500	       515.000     0.00206000     0.00043564     0.00009213
+ 1000	      3010.000     0.00301000     0.00053526     0.00009518
+ 2000	     15141.000     0.00378525     0.00056603     0.00008464
+ 4000	     69919.000     0.00436994     0.00054949     0.00006909
+ 8000	    310148.000     0.00484606     0.00051241     0.00005418
+16000	   1316334.000     0.00514193     0.00045719     0.00004065
+cota subestimada(f(n)): n^2     cota ajustada(g(n)): n^2.25    constante cota ajustada: 0.0005   cota sobreestimada(h(n)): n^2.5
+
+Dispersion A exploración cuadrática:
+Insertando 19062 elementos... Numero total de colisiones: 2106581
+Buscando n elementos...
+    n	          t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+  125*	         6.839     0.00793083     0.00226007     0.00114962
+  250*	        19.952     0.00876739     0.00208644     0.00096315
+  500*	        65.632     0.01092843     0.00217183     0.00090985
+ 1000*	       230.180     0.01452338     0.00241028     0.00091636
+ 2000	       746.000     0.01783597     0.00247189     0.00085287
+ 4000	      2232.000     0.02022135     0.00234032     0.00073280
+ 8000	      7283.000     0.02500255     0.00241647     0.00068667
+16000	     22134.000     0.02879333     0.00232392     0.00059930
+cota subestimada(f(n)): n^1.4     cota ajustada(g(n)): n^1.66    constante cota ajustada: 0.0024   cota sobreestimada(h(n)): n^1.8
+
+Dispersion A exploración doble:
+Insertando 19062 elementos... Numero total de colisiones: 1451531
+Buscando n elementos...
+    n	          t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+  125*	         5.163     0.01572570     0.00110487     0.00033043
+  250*	        12.410     0.01645295     0.00078954     0.00019856
+  500*	        35.594     0.02054058     0.00067325     0.00014238
+ 1000*	       113.097     0.02840868     0.00063599     0.00011310
+ 2000*	       351.680     0.03845136     0.00058796     0.00008792
+ 4000	      1099.000     0.05230289     0.00054625     0.00006869
+ 8000	      4783.000     0.09908146     0.00070679     0.00007473
+16000	     17284.000     0.15584766     0.00075934     0.00006752
+cota subestimada(f(n)): n^1.2     cota ajustada(g(n)): n^1.75    constante cota ajustada:0.0007    cota sobreestimada(h(n)): n^2
+
+Dispersión B exploración lineal:
+Insertando 19062 elementos... Numero total de colisiones: 16965
+Buscando n elementos...
+    n	          t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+  125*	         4.401     0.09247479     0.02172453     0.00194310
+  250*	         9.116     0.11001510     0.02099280     0.00132770
+  500*	        18.973     0.13151037     0.02038304     0.00091156
+ 1000*	        40.188     0.15999131     0.02014171     0.00063694
+ 2000*	        93.207     0.21312016     0.02179293     0.00048730
+ 4000*	       198.969     0.26129881     0.02170298     0.00034315
+ 8000	       756.000     0.57022966     0.03847006     0.00043011
+16000	      1880.000     0.81444519     0.04462990     0.00035283
+
+cota subestimada(f(n)): n^0.8     cota ajustada(g(n)): n^1.1    constante cota ajustada: 0.021   cota sobreestimada(h(n)): n^1.6
+
+Dispersion B exploración cuadrática:
+Insertando 19062 elementos... Numero total de colisiones: 13366
+Buscando n elementos...
+    n	          t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+  125*	         4.287     0.09007940     0.02116179     0.00306753
+  250*	         9.062     0.10936341     0.02086844     0.00229252
+  500*	        18.829     0.13051224     0.02022834     0.00168412
+ 1000*	        39.580     0.15757082     0.01983699     0.00125163
+ 2000*	        92.016     0.21039691     0.02151446     0.00102877
+ 4000*	       198.064     0.26011030     0.02160427     0.00078292
+ 8000	       709.000     0.53477888     0.03607840     0.00099086
+16000	      1781.000     0.77155685     0.04227970     0.00088000
+cota subestimada(f(n)): n^0.8     cota ajustada(g(n)): n^1.1    constante cota ajustada: 0.021   cota sobreestimada(h(n)): n^1.5
+
+Dispersion B exploración doble:
+Insertando 19062 elementos... Numero total de colisiones: 19401
+Buscando n elementos...
+    n	          t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+  125*	         4.467     0.09386160     0.02205032     0.00319633
+  250*	         9.236     0.11146331     0.02126914     0.00233654
+  500*	        19.423     0.13462952     0.02086649     0.00173725
+ 1000*	        40.606     0.16165540     0.02035121     0.00128407
+ 2000*	        94.770     0.21669400     0.02215837     0.00105956
+ 4000*	       204.451     0.26849812     0.02230094     0.00080816
+ 8000	       783.000     0.59059501     0.03984399     0.00109428
+16000	      2584.000     1.11942892     0.06134237     0.00127677
+cota subestimada(f(n)): n^0.8     cota ajustada(g(n)): n^1.1    constante cota ajustada: 0.022   cota sobreestimada(h(n)): n^1.5
+
+
+¿Se obtiene O(n) en todos los casos? ¿Por qué?
+
+Podemos concluír que en la dispersión B se producen bastantes menos colisiones, por lo que la dispersión B es mejor que la A. En relación a los tiempos de ejecución podemos
+observar que son menores en la dispersión B, debido a que tiene menos colisiones. Dentro de la dispersión B podemos apreciar que los tiempos de ejecución son parecidos en las
+tres exploraciones, siendo la exploración doble la más lenta y la exploración lineal la más rápida, aunque la exploración cuadrática no tarda mucho más en ejcutarse que esta
+última. En lo relativo a la dispersión A, podemos ver que la exploración lineal es la más lenta, con bastante diferencia con las otras dos exploraciones, y que la exploración
+doble la más lenta. Vistos estos datos podemos afirmar que la dispersión B es más rápida que la dispersión A y concretamente su exploración lineal, sin embargo la exploración
+lineal de la dispersión A es el caso más lento.
