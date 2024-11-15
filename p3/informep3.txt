@@ -1,0 +1,149 @@
+/*
+Grupo 1.2
+Iván Afonso Cerdeira ivan.afonso@udc.es
+Minerva Antía Lago López minerva.lago.lopez@udc.es
+*/
+
+En esta práctica nos piden construir un programa de consulta de sinónimos de una palabra dada con el objetivo de comparar varias implementaciones de diccionario de datos.
+Se usan dos dispersiones, A y B, y para cada una usaremos tablas de dispersión cerrada con exploración lineal, exploración cuadrática y exploración doble. Medimos los
+tiempos de cada uno de estes casos, para ello sacamos las cotas, y después en la conclusión los comparamos. Además también mediremos el número de colisiones y los compararemos.
+También nos piden implementar cuatro operaciones: inicializar, insertar, buscar y mostrar.
+
+
+Para la medición de dichos tiempos de ejecución hemos utilizado un portátil con las siguientes características:
+	Sistema operativo: Ubuntu 24.04.1
+            Kernel: Linux 6.8.0-48-generic
+            Architecture: x86-64
+            Hardware Model: 12th Gen Intel(R) Core(TM) i7-12700H
+            GPU: NVIDIA Corporation GA107M [GeForce RTX 3050 Mobile]
+            CPU:  	Model name: ASUS TUF Gaming F15 FX507ZC4_TUF507ZC4
+                  	CPU family:           6
+                  	Model:                154
+        		Thread(s) per core:   2
+        		Core(s) per socket:   14
+        		Socket(s):            1
+       		 Stepping:             1
+        		CPU(s) scaling MHz:   18%
+        		CPU max MHz:          4700.0000
+        		CPU min MHz:          400.0000
+            Mem: total:15Gi, used:8 Gi, free:3.4Gi, shared: 728Mi,
+                 buf/cache: 4.8Gi available: 7.2Gi
+
+A continuación se muestran las mediciones de tiempos y sus respectivas cotas, en microsegundos (µs), para cada caso (se muestran con un "*" los casos que no cumplen el umbral
+de confianza de 500µs y que por tanto se han calculado con un bucle de 1000 iteraciones y calculando el promedio):
+
+Dispersión A:
+
+Exploración lineal:
+
+Insertando 19062 elementos... Numero total de colisiones: 172623183
+*Buscando n elementos...
+n	              t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+125	           7099.000   149.16576707    56.79200000    11.76228453
+250	          14384.000   173.59118485    57.53600000    10.42043054
+500	          28442.000   197.14425629    56.88400000     9.15327227
+1000	      	  56720.000   225.80638714    56.72000000     8.21106100
+2000	         112797.000   257.91318971    56.39850000     7.41997418
+4000	         226749.000   297.78127656    56.68725000     6.83468902
+8000	         451442.000   340.51007922    56.43025000     6.27896007
+16000	         905487.000   392.27102787    56.59293750     5.84617008
+
+cota subestimada(f(n)): n^0.8     cota ajustada(g(n)): n    constante cota ajustada: 56.79   cota sobreestimada(h(n)): n*log(n)
+
+Exploración cuadrática:
+
+Insertando 19062 elementos... Numero total de colisiones: 2106581
+*Buscando n elementos...
+    n	           t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+*  125	         97.366     2.04587605     0.77892800     0.16132506
+*  250	        212.110     2.55981829     0.84844000     0.15366223
+   500	        509.000     3.52810725     1.01800000     0.16380759
+   1000	       1037.000     4.12837136     1.03700000     0.15012113
+   2000	       2109.000     4.82228177     1.05450000     0.13873353
+   4000	       4019.000     5.27800762     1.00475000     0.12114106
+   8000	       7855.000     5.92480689     0.98187500     0.10925264
+   6000	      15221.000     6.59397354     0.95131250     0.09827259
+
+cota subestimada(f(n)): n^0.8     cota ajustada(g(n)): n    constante cota ajustada: 1   cota sobreestimada(h(n)): n*log(n)
+
+Exploración doble:
+
+Insertando 19062 elementos... Numero total de colisiones: 1451531
+*Buscando n elementos...
+    n	           t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+*  125	         80.570     1.69295476     0.64456000     0.13349588
+*  250	        178.008     2.14826332     0.71203200     0.12895717
+*  500	        372.338     2.58084165     0.74467600     0.11982670
+   1000	        895.000     3.56305918     0.89500000     0.12956452
+   2000	       1799.000     4.11345894     0.89950000     0.11834121
+   4000	       3493.000     4.58723081     0.87325000     0.10528632
+   8000	       6632.000     5.00233218     0.82900000     0.09224233
+   16000      13367.000     5.79079195     0.83543750     0.08630246
+
+cota subestimada(f(n)): n^0.8     cota ajustada(g(n)): n    constante cota ajustada:0.89    cota sobreestimada(h(n)): n*log(n)
+
+Dispersión B:
+
+Exploración lineal:
+
+Insertando 19062 elementos... Numero total de colisiones: 16965
+*Buscando n elementos...
+    n	           t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+*  125	          2.698     0.05669098     0.02158400     0.00447030
+*  250	          5.466     0.06596562     0.02186400     0.00395982
+*  500	         11.808     0.08184654     0.02361600     0.00380008
+* 1000	         30.092     0.11979841     0.03009200     0.00435626
+* 2000	         95.986     0.21947441     0.04799300     0.00631412
+* 4000	        226.660     0.29766440     0.05666500     0.00683201
+  8000	        657.000     0.49555673     0.08212500     0.00913800
+ 16000	       1301.000     0.56361340     0.08131250     0.00839975
+
+cota subestimada(f(n)): n^0.8     cota ajustada(g(n)): n    constante cota ajustada: 0.082   cota sobreestimada(h(n)): n*log(n)
+
+Exploración cuadrática:
+
+Insertando 19062 elementos... Numero total de colisiones: 13366
+*Buscando n elementos...
+    n	           t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+*  125	          2.894     0.06080937     0.02315200     0.00479505
+*  250	          5.510     0.06649662     0.02204000     0.00399170
+*  500	         11.500     0.07971166     0.02300000     0.00370096
+* 1000	         27.024     0.10758448     0.02702400     0.00391212
+* 2000	         89.562     0.20478578     0.04478100     0.00589154
+* 4000	        223.954     0.29411070     0.05598850     0.00675044
+  8000	        663.000     0.50008236     0.08287500     0.00922145
+ 16000	       1167.000     0.50556252     0.07293750     0.00753460
+
+cota subestimada(f(n)): n^0.8     cota ajustada(g(n)): n    constante cota ajustada: 0.072   cota sobreestimada(h(n)): n*log(n)
+
+Exploración doble:
+
+Insertando 19062 elementos... Numero total de colisiones: 19401
+*Buscando n elementos...
+    n	           t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+*  125	          2.774     0.05828791     0.02219200     0.00459622
+*  250	          5.470     0.06601389     0.02188000     0.00396272
+*  500	         10.624     0.07363971     0.02124800     0.00341904
+* 1000	         31.056     0.12363616     0.03105600     0.00449582
+* 2000	         94.718     0.21657510     0.04735900     0.00623071
+* 4000	        236.860     0.31105969     0.05921500     0.00713946
+  8000	        688.000     0.51893916     0.08600000     0.00956917
+  16000	       1371.000     0.59393849     0.08568750     0.00885170
+
+cota subestimada(f(n)): n^0.8    cota ajustada(g(n)): n    constante cota ajustada: 0.085   cota sobreestimada(h(n)): n*log(n)
+
+Como podemos observar los tiempos varían en función de si cumple el umbral de confianza o no, es decir que los tiempos aumentan, se puede ver comparando el último valor
+que no cumple el umbral de confianza, con la primera medición que lo cumple.
+
+¿Se obtiene O(n) en todos los casos? ¿Por qué?
+
+Nosotros obtenemos O(n) en todos los casos, aunque esto podría no pasar debido al alto número de colisiones, sobretodo en la dispersión A, por lo que hace variar los
+tiempos de ejecución y esto podría provocar pequeñas desviaciones en la complejidad, por lo que podría pasar, no en nuestro caso, que no fuese O(n). Cuando la función de dispersión
+no distribuye las claves de manera uniforme (como podría ser el caso con nuestra función de dispersión A), se pueden generar un gran número de colisiones, lo que podría hacer
+variar la complejidad, ya que aumenta el tiempo de búsqueda.
+
+Podemos concluír que en la dispersión B se producen bastantes menos colisiones, por lo que la dispersión B es mejor que la A. En relación a los tiempos de ejecución podemos
+observar que son menores en la dispersión B, debido a que tiene menos colisiones. Dentro de la dispersión B podemos apreciar que los tiempos de ejecución son parecidos en las
+tres exploraciones, siendo la exploración doble la más lenta y la exploración cuadrática la más rápida. En lo relativo a la dispersión A, podemos ver que la exploración lineal
+es la más lenta, con bastante diferencia con las otras dos exploraciones, y que la exploración doble la más rápida. Vistos estos datos podemos afirmar que la dispersión B es más
+rápida que la dispersión A y concretamente su exploración cuadrática, sin embargo la exploración lineal de la dispersión A es el caso más lento.
