@@ -125,8 +125,6 @@ void crearMonticulo(pmonticulo m, int v[], int n) {
     }
 }
 
-    
-
 void ordenarPorMonticulos(int v[], int n) {
     struct monticulo m;
     crearMonticulo(&m, v, n);
@@ -135,8 +133,6 @@ void ordenarPorMonticulos(int v[], int n) {
         quitarMenor(&m);
     }
 }
-
-
 
 void mediciones(void (*ordenacion)(int[], int), double (*f1)(int), double (*f2)(int), double (*f3)(int)) {
     struct monticulo m;                                  
@@ -185,6 +181,93 @@ void mediciones(void (*ordenacion)(int[], int), double (*f1)(int), double (*f2)(
     printf("\n");
 }  
 
+void medicionCrearMonticulo(double (*f1)(int), double (*f2)(int), double (*f3)(int)) {
+    int l = 1000;
+    int v[l];
+    int n;
+    struct monticulo m;
+    double t, t1, t2;
+    double promedio = 0.0;
+    int k=100;
+
+    for (n=500; n <= 64000; n *= 2) {
+        promedio = 0.0;
+        t1 = microsegundos();
+        for (int i = 0; i < n; i++) {
+            iniMonticulo(&m);
+            for (int j = 0; j < l; j++) {
+                insertarMonticulo(&m, v[j]); //Añade l nodos al monticulo
+            }
+        }
+        t2 = microsegundos();
+        t = t2 - t1;
+        if (t < 500) {
+            promedio = 0.0;
+            do {
+                t1 = microsegundos();
+                for (int i = 0; i < k; i++) {
+                    for (int j = 0; j < n; j++) {
+                        iniMonticulo(&m);
+                        for (int k = 0; k < l; k++) {
+                            insertarMonticulo(&m, v[k]); //Añade l nodos al monticulo
+                        }
+                    }
+                }
+                t2 = microsegundos();
+                promedio = t2 - t1;
+
+            } while (promedio < 500);
+
+            t = promedio / k;
+        }
+        printf("%5d\t%15.3f\t%15.8f\t%15.8f\t%15.8f\n",
+               n, t, t / f1(n), t / f2(n), t / f3(n));
+    }
+    printf("\n");
+}
+
+void medicionInsertarMonticulo(double (*f1)(int), double (*f2)(int), double (*f3)(int)) {
+    int l = 10000;
+    int v[l];
+    int n;
+    struct monticulo m;
+    double t, t1, t2;
+    int k = 100;
+
+    for (n = 500; n <= 64000; n *= 2) {
+        t1 = microsegundos();
+        for (int i = 0; i < n; i++) {
+            iniMonticulo(&m);
+            for (int j = 0; j < l; j++) {
+                insertarMonticulo(&m, v[j]); //Añade l nodos
+            }
+        }
+        t2 = microsegundos();
+        t = t2 - t1;
+
+        if (t < 500) {
+            do {
+                t1 = microsegundos();
+                for (int i = 0; i < k; i++) {
+                    for (int j = 0; j < n; j++) {
+                        iniMonticulo(&m);
+                        for (int z = 0; z < l; z++) {
+                            insertarMonticulo(&m, v[z]); //Añade l nodos
+                        }
+                    }
+                }
+                t2 = microsegundos();
+                t = (t2 - t1);
+            } while (t < 500);
+            t = t / k;
+        }
+        printf("%5d\t%15.3f\t%15.8f\t%15.8f\t%15.8f\n",
+               n, t, t / f1(n), t / f2(n), t / f3(n));
+    }
+
+    printf("\n");
+}
+
 double f1_desc(int n) { return pow(n, 0.8); }
 double f2_desc(int n) { return (n*log(n)); }
 double f3_desc(int n) { return pow(n, 1.5); }
@@ -196,6 +279,14 @@ double f3_asc(int n) { return pow(n, 1.5); }
 double f1_aleat(int n) { return pow(n, 0.8); }
 double f2_aleat(int n) { return (n*log(n)); }
 double f3_aleat(int n) { return pow(n,1.5); }
+
+double f1_insertarMonticulo(int n) { return /*log(n)*/ pow(n, 0.8); }
+double f2_insertarMonticulo(int n) { return n; }
+double f3_insertarMonticulo(int n) { return pow(n, 1.05); }
+
+double f1_crearMonticulo(int n) { return pow(n,0.5); /*n * log(pow(n, 0.2));*/ }
+double f2_crearMonticulo(int n) { return pow(n,0.972); }
+double f3_crearMonticulo(int n) { return pow(n, 1.485); }
 
 bool estaOrdenado(int v[], int n) {
     for (int i = 1; i < n; i++) {
@@ -221,6 +312,8 @@ void imprimirMonticulo(pmonticulo m) {
     }
     printf("]\n");
 }
+
+
 void probarMonticulos() {
     struct monticulo m;
     int v[TAM];
@@ -271,6 +364,11 @@ int main(){
     mediciones(ascendente, f1_asc, f2_asc, f3_asc);
     printf("\nPrueba con orden aleatorio:\n");
     mediciones(aleatorio, f1_aleat, f2_aleat, f3_aleat);
+    printf("Mediciones para insertarMonticulo:\n");
+    medicionInsertarMonticulo(f1_insertarMonticulo, f2_insertarMonticulo, f3_insertarMonticulo);
+    printf("\nMediciones para crearMonticulo:\n");
+    medicionCrearMonticulo(f1_crearMonticulo, f2_crearMonticulo, f3_crearMonticulo);
     return 0;
 }
+
 //comparar con la practica 2
