@@ -1,0 +1,113 @@
+/*
+Grupo 1.2
+Iván Afonso Cerdeira ivan.afonso@udc.es
+Minerva Antía Lago López minerva.lago.lopez@udc.es
+*/
+
+En esta práctica se nos pide implementar varios algoritmos para los montículos. Debemos crear cinco tablas de medición de tiempos, 
+para la insercción del montículo y para su creación y también para cuando el vector está ordenado ascendentemente, descendentemente y 
+de forma aleatoria. Debemos demostrar que la complejidad de la insercción del montículo se ejecuta en un tiempo O(n log n), en cambio 
+la creación en O(n). Además tenemos que calcular empíricamente la complejidad del algoritmo de ordenación, para los tres vectores 
+mencionados anteriormente, y compararlas con las de las prácticas anteriores, concretamente con la práctica 2.
+
+Para la medición de dichos tiempos de ejecución hemos utilizado un portátil con las siguientes características:
+	Sistema operativo: Ubuntu 24.04.1
+            Kernel: Linux 6.8.0-48-generic
+            Architecture: x86-64
+            Hardware Model: 12th Gen Intel(R) Core(TM) i7-12700H
+            GPU: NVIDIA Corporation GA107M [GeForce RTX 3050 Mobile]
+            CPU:  	Model name: ASUS TUF Gaming F15 FX507ZC4_TUF507ZC4
+                  	CPU family:           6
+                  	Model:                154
+        		    Thread(s) per core:   2
+        		    Core(s) per socket:   14
+        		    Socket(s):            1
+       		        Stepping:             1
+        		    CPU(s) scaling MHz:   18%
+        		    CPU max MHz:          4700.0000
+        		    CPU min MHz:          400.0000
+            Mem: total:15Gi, used:8 Gi, free:3.4Gi, shared: 728Mi,
+                 buf/cache: 4.8Gi available: 7.2Gi
+
+A continuación se muestran las mediciones de tiempos, en microsegundos (µs), y sus respectivas cotas para cada caso (se muestran con un 
+"*" los casos que no cumplen el umbral de confianza de 500µs y que por tanto se han calculado con un bucle de 10000 
+iteraciones para los tres vectores y de 1000 iteraciones para las otras dos funciones y calculando el promedio):
+
+Vector con orden descendente:
+    n	          t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+  4000*	       420.006     1.26419395     0.01265987     0.00273080
+  8000	       961.000     1.78057551     0.01336624     0.00230289
+ 16000	      2001.000     2.28224940     0.01291922     0.00176732
+ 32000	      4243.000     2.97898315     0.01278198     0.00138120
+ 64000	      8853.000     3.82617194     0.01249956     0.00106216
+128000	     18589.000     4.94548682     0.01234942     0.00082200
+256000	     38952.000     6.37913489     0.01221851     0.00063484
+
+cota subestimada(f(n)): n^0.7    cota ajustada(g(n)): n*log(n)   constante cota ajustada: 0.012   cota sobreestimada(h(n)): n^1.44
+
+Vector con orden ascendente:
+    n	          t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+  4000*	       423.476     0.08604329     0.01276444     0.00322330
+  8000	       906.000     0.09046091     0.01260126     0.00257536
+ 16000	      1930.000     0.09469659     0.01246082     0.00204882
+ 32000	      4106.000     0.09900114     0.01236927     0.00162780
+ 64000	      8600.000     0.10189761     0.01214235     0.00127326
+128000	     18098.000     0.10537567     0.01202323     0.00100066
+256000	     37911.000     0.10847241     0.01189197     0.00078281
+
+cota subestimada(f(n)): n^1.025    cota ajustada(g(n)): n*log(n)   constante cota ajustada: 0.012   cota sobreestimada(h(n)): n^1.421
+
+Vector con orden aleatorio:
+    n	          t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+  4000	       532.000     0.30482995     0.01603559     0.00313127
+  8000	      1060.000     0.32548043     0.01474320     0.00228044
+ 16000	      2281.000     0.37533348     0.01472701     0.00179367
+ 32000	      4874.000     0.42978430     0.01468286     0.00140090
+ 64000	     10361.000     0.48959807     0.01462871     0.00108850
+128000	     21984.000     0.55669554     0.01460486     0.00084419
+256000	     46705.000     0.63379296     0.01465048     0.00065554
+
+cota subestimada(f(n)): n^0.9    cota ajustada(g(n)): n*log(n)   constante cota ajustada: 0.014   cota sobreestimada(h(n)): n^1.452
+
+Mediciones para insertarMonticulo:
+    n	          t(n)       t(n)/f(n)       t(n)/g(n)       t(n)/h(n)
+  4000*	        65.732	    0.08632346	    0.01643300	    0.00090156
+  8000*	       152.359	    0.11492013	    0.01904488	    0.00081978
+ 16000*	       318.259	    0.13787474	    0.01989119	    0.00067177
+ 32000	       688.000	    0.17118608	    0.02150000	    0.00056969
+ 64000	      1377.000	    0.19678408	    0.02151563	    0.00044729
+128000	      2781.000	    0.22826168	    0.02172656	    0.00035438
+256000	      5473.000	    0.25800818	    0.02137891	    0.00027359
+
+cota subestimada(f(n)): n^0.8   cota ajustada(g(n)): n   constante cota ajustada: 0.021  cota sobreestimada(h(n)): n^1.35
+
+Mediciones para crearMonticulo:
+    n	          t(n)       t(n)/f(n)       t(n)/g(n)       t(n)/h(n)
+  4000*	        37.552	    0.04931569	    0.00113190	    0.00022472
+  8000*	       100.879	    0.07609021	    0.00140309	    0.00022096
+ 16000*	       225.445	    0.09766627	    0.00145556	    0.00018075
+ 32000*	       460.832	    0.11466283	    0.00138825	    0.00013523
+ 64000	       939.000	    0.13419045	    0.00132578	    0.00010086
+128000	      1876.000	    0.15398019	    0.00124630	    0.00007375
+256000	      3687.000	    0.17381256	    0.00115654	    0.00005305
+
+cota subestimada(f(n)): n^0.8   cota ajustada(g(n)): n*log(n)   constante cota ajustada: 0.001  cota sobreestimada(h(n)): n^1.45
+
+Nos piden demostrar empíricamente que insertarMontículo se ejecuta en un tiempo O(nlogn) y crearMontículo O(n). Lo que podemos
+demostrar observando las tablas de medición de tiempos, en las que hemos usado de cota ajustada O(nlogn) y O(n), para insertar el
+montículo y para crearlo respectivamente. La cota ajustada para ambos casos tiende a un valor constante, para insertar 0.021 y para
+crear 0.001, por lo que podemos concluír que la cuestión es verdadera.
+
+También nos piden calcular empíricamente la complejidad del algoritmo para cada tipo de vector, ascendente, descendente y desordenado.
+Para el vector ascendente, mejor caso, las observaciones muestran que la complejidad es O(nlogn), aunque en casos específicos
+puede aproximarse a n^1.421. Para el vector descendente, peor caso, y el vector desordenado, caso medio. Por tanto la complejidad
+de este algoritmo es O(nlogn).
+Nos piden compararlo con la complejidad de la práctica 2, la cuál era O(n²), ya que la del algoritmo de inserción es O(n²), ya que en el
+peor caso, vector odenado descendentemente, cada elemento del vector se compara y desplaza hasta el inicio del arreglo, la complejidad del
+algoritmo de ordenación rápida es O(n²) en el peor caso, sucede cuando el pivote divide el arreglo de manera desequilibrada.
+Visto esto, podemos decir que el algoritmo de montículos es más eficiente.
+
+Podemos concluir, observando los tiempos de ejecución, que cuando el vector está ordenado ascendentemente, es cuando menos tiempo tarda, esto
+es debido a que es el mejor caso, ya que el vector ya está ordenado como queremos. Sorprendentemente cuando más tarda es cuando el vector está
+ordenado aleatoriamente, ya que lo esperado sería que esto pasara cuando el vector estuviese ordenado descendentemente, ya que estaría ordenado
+justo al revés de como queremos. Esto se debe a que el vector aleatorio provoca más operaciones, ya que no tiene ningún tipo de orden.

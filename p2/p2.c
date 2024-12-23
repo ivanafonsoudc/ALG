@@ -154,7 +154,7 @@ double f3_insercion_ascendente(int n) { return pow(n, 1.1); }
 
 
 
-void testaux(void(*ordenacion)(int[], int), void(*generador)(int[], int),int v[],int n, const char* nombre){
+/*void testaux(void(*ordenacion)(int[], int), void(*generador)(int[], int),int v[],int n, const char* nombre){
     printf("%s\n", nombre);
     generador(v, n);
     printf("Array before sorting:\n");
@@ -175,7 +175,7 @@ void test(){
     testaux(ordenacionPorInsercion, aleatorio, v, n, "Insercion Aleatorio");
     testaux(ordenacionPorInsercion, ascendente, v, n, "Insercion Ascendente");
     testaux(ordenacionPorInsercion, descendente, v, n, "Insercion Descendente");
-}
+}*/
 
 
 int main() {
