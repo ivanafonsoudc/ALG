@@ -10,6 +10,7 @@
 #define LONGITUD_SINONIMOS 300
 #define TAM_TABLA  10007
 #define TAM_TABLA2  11
+#define TAM_TABLA3  100
 
 double microsegundos() {                  
     struct timeval t;                         
@@ -31,6 +32,18 @@ typedef struct {
     
 typedef int pos;
 typedef entrada *tabla_cerrada;
+
+
+typedef struct nodo{
+    char clave[LONGITUD_CLAVE];
+    char sinonimos[LONGITUD_SINONIMOS];
+    struct nodo *siguiente; 
+}nodo;
+
+typedef struct{
+    nodo **tabla; //array de punteros a nodo
+    int tam;
+}tabla_abierta;
 
 void inicializar_cerrada(tabla_cerrada *diccionario, int tam) {
     int i;
@@ -86,7 +99,28 @@ unsigned int dispersionB(char *clave, int tamTabla) {
     for (i = 1; i < n; i++)
         valor = (valor<<5) + clave[i]; // el desplazamiento de 5 bits equivale a 
     return valor % tamTabla; // multipicar por 32 
-}    
+}   
+
+unsigned int dispersionC(char *clave, int tamTabla){
+    int i;
+    unsigned int valor = 0;
+    for(i = 0; i < strlen(clave) - 1; i++){
+        valor = (valor + (clave[i] *  (i+1)));
+    }
+    return valor % tamTabla;
+}
+
+unsigned int dispersionD(char *clave, int tamTabla){
+    unsigned int valor = 0;
+    for (int i = 0; clave[i] != '\0'; i++) {
+        valor = valor * 31 + clave[i];
+    }
+    double k = 0.6180339887;
+    double hash = valor * k;
+    return (unsigned int)(tamTabla * (hash - (unsigned int)hash));
+}
+
+
 
 unsigned int resol_lineal(int pos_ini, int num_intento) {
     return (pos_ini + num_intento) % TAM_TABLA;
@@ -158,11 +192,84 @@ void generar_orden_aleatorio(int indices[], int num_datos) {
     
 }
 
+//TABLA DE DISPERSION CERRADA
+unsigned int hash(char *clave, int tam){
+    unsigned int valor = 0;
+    for (int i = 0; clave[i] != '\0'; i++){
+        valor = (valor * 31 + clave[i]) % tam;
+    }
+    return valor;
+}
+
+void inicializar_abierta(tabla_abierta *t, int tam ){
+    t -> tabla = (nodo **) malloc ( sizeof (nodo * ) * tam);
+    t -> tam = tam;
+    for(int i = 0; i < tam; i++){
+        t -> tabla[i] = NULL;
+    }
+}
+
+void insertar_abierta(tabla_abierta *t,char *clave, char *sinonimos){
+    unsigned int pos = hash(clave, t -> tam);
+    nodo *nuevo = (nodo *) malloc(sizeof(nodo));
+    strcpy(nuevo -> clave, clave);
+    strcpy(nuevo -> sinonimos, sinonimos);
+    nuevo -> siguiente = t -> tabla[pos];
+    t -> tabla[pos] = nuevo;
+}
+
+nodo *buscar_abierta(tabla_abierta *t, char *clave){
+    unsigned int pos = hash (clave, t->tam);
+    nodo *aux = t -> tabla[pos];
+    while(aux != NULL){
+        if(strcmp(aux-> clave, clave)== 0){
+            return aux;
+        }
+        aux = aux -> siguiente;
+    }
+    return NULL;
+}
+
+void mostrar_abierta ( tabla_abierta *t){
+    for(int i = 0; i < t->tam; i++){
+        printf("%d: ", i);
+        nodo *aux = t -> tabla[i];
+        while(aux != NULL){
+            printf("(%s) ", aux -> clave);
+            aux = aux -> siguiente;
+        }
+        printf("\n");
+    }
+}
+
+void medir_tiempos(tabla_abierta *t, char *claves[], int num_claves){
+    clock_t inicio,fin;
+    inicio = clock();
+    for(int i = 0; i < num_claves; i++){
+        buscar_abierta(t, claves[i]);
+    }
+    fin = clock();
+    printf("Tempo: %.6f segundos\n", (double)(fin - inicio) / CLOCKS_PER_SEC); 
+
+}
+
+void liberar_abierta(tabla_abierta *t){
+    for(int i = 0; i < t -> tam; i++){
+        nodo *aux = t -> tabla[i];
+        while(aux != NULL){
+            nodo *aux2 = aux;
+            aux = aux -> siguiente;
+            free(aux2);
+        }
+    }
+    free(t -> tabla);   
+}
+
 
 void mediciones(unsigned int (*dispersion)(char *, int), unsigned int (*resol_colisiones)(int, int), item datos[], int num_datos, char *nombre, char *resol, double (*f1)(int), double (*f2)(int), double (*f3)(int)) {
     int i, j, l, colisiones;
     int k = 1000; // Número de repeticiones
-    double t1, t2, ta, tb, t, x, y, z;
+    double t1, t2,t3,t4, ta, tb, t, x, y, z;
     int colisiones_total = 0;
     int indices[num_datos];
     tabla_cerrada diccionario;
@@ -190,6 +297,7 @@ void mediciones(unsigned int (*dispersion)(char *, int), unsigned int (*resol_co
         t = (t2 - t1);
 
         if (t < 500) {
+            // Cálculo de tiempo con operaciones reales
             ta = microsegundos();
             for (int h = 0; h < k; h++) {
                 for (int p = 0; p < limite; p++) {
@@ -198,10 +306,26 @@ void mediciones(unsigned int (*dispersion)(char *, int), unsigned int (*resol_co
                 }
             }
             tb = microsegundos();
-            t = (tb - ta) / k;
+            t3 = (tb - ta) / k;
+
+            // Cálculo de sobrecarga
+            ta = microsegundos();
+            for (int h = 0; h < k; h++) {
+                for (int p = 0; p < limite; p++) {
+                    // Bucle vacío con operaciones básicas
+                    colisiones = 0;
+                }
+            }
+            tb = microsegundos();
+            t4 = (tb - ta) / k;
+
+            // Calcular tiempo neto
+            t = t3 - t4;
+            if (t < 0) t = 0; // Evita tiempos negativos
             printf("*");
         } else {
             printf(" ");
+
         }
 
         y = t / f1(i);
@@ -238,6 +362,31 @@ double f3_B_cuad(int n) { return (n * log(n)); }
 double f1_B_doble(int n) { return pow(n, 0.8); }
 double f2_B_doble(int n) { return pow(n, 1); }
 double f3_B_doble(int n) { return (n * log(n)); }
+
+double f1_C_lin(int n) { return pow(n, 0.8); }
+double f2_C_lin(int n) { return pow(n, 1); }
+double f3_C_lin(int n) { return (n * log(n)); }
+
+double f1_C_cuad(int n) { return pow(n, 0.8); }
+double f2_C_cuad(int n) { return pow(n, 1); }
+double f3_C_cuad(int n) { return (n * log(n)); }
+
+double f1_C_doble(int n) { return pow(n, 0.8); }
+double f2_C_doble(int n) { return pow(n, 1); }
+double f3_C_doble(int n) { return (n * log(n)); }
+
+double f1_D_lin(int n) { return pow(n, 0.8); }
+double f2_D_lin(int n) { return pow(n, 1); }
+double f3_D_lin(int n) { return (n * log(n)); }
+
+double f1_D_cuad(int n) { return pow(n, 0.8); }
+double f2_D_cuad(int n) { return pow(n, 1); }
+double f3_D_cuad(int n) { return (n * log(n)); }
+
+
+double f1_D_doble(int n) { return pow(n, 0.8); }
+double f2_D_doble(int n) { return pow(n, 1); }
+double f3_D_doble(int n) { return (n * log(n)); }
 
 
 
@@ -295,7 +444,31 @@ int main() {
     mediciones(dispersionB, resol_cuadratica, datos, num_datos, "dispersionB","Cuadratica", f1_B_cuad, f2_B_cuad, f3_B_cuad);
     mediciones(dispersionB, resol_doble, datos, num_datos, "dispersionB","Doble", f1_B_doble, f2_B_doble, f3_B_doble);
 
+    mediciones(dispersionC, resol_lineal, datos, num_datos, "dispersionC","Lineal", f1_C_lin, f2_C_lin, f3_C_lin);
+    mediciones(dispersionC, resol_cuadratica, datos, num_datos, "dispersionC","Cuadratica", f1_C_cuad, f2_C_cuad, f3_C_cuad);
+    mediciones(dispersionC, resol_doble, datos, num_datos, "dispersionC","Doble", f1_C_doble, f2_C_doble, f3_C_doble);
+
+    mediciones(dispersionD, resol_lineal, datos, num_datos, "dispersionD","Lineal", f1_D_lin, f2_D_lin, f3_D_lin);
+    mediciones(dispersionD, resol_cuadratica, datos, num_datos, "dispersionD","Cuadratica", f1_D_cuad, f2_D_cuad, f3_D_cuad);
+    mediciones(dispersionD, resol_doble, datos, num_datos, "dispersionD","Doble", f1_D_doble, f2_D_doble, f3_D_doble);
+
     free(datos);
+
+    //TABLA DE DISPERSION ABIERTA
+    tabla_abierta diccionario;
+    inicializar_abierta(&diccionario, TAM_TABLA3);
+    insertar_abierta(&diccionario, "perro", "can, cachhoro, chucho");
+    insertar_abierta(&diccionario, "gato", "felino, michi, minino");
+    insertar_abierta(&diccionario, "pajaro", "ave, volador, plumifero");
+
+    printf("Contenido de la tabla: \n");
+    mostrar_abierta(&diccionario);
+
+    char *claves[] = {"perro", "gato", "pajaro", "pez"};
+    medir_tiempos(&diccionario, claves, 4);
+
+    liberar_abierta(&diccionario);  
+
     return 0;
 }
 

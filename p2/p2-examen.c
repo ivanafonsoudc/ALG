@@ -39,6 +39,8 @@ void descendente(int v [], int n) {
         v[i] = n-i;}
 }
 
+
+
 void ordenacionPorInsercion(int v[], int n, void(*generador)(int[], int)) {
     generador(v, n);
     int x,j,i;
@@ -58,6 +60,21 @@ void intercambiar(int *a, int *b) {
     *a = *b;
     *b = temp;
 }
+
+int mediana3(int v[], int iz, int dr){
+    int medio = (iz + dr) / 2;
+    if(v[iz] > v[medio]){
+        intercambiar(&v[iz], &v[medio]);
+    }
+    if(v[iz] > v[dr]){
+        intercambiar(&v[iz], &v[dr]);
+    }
+    if(v[medio] > v[dr]){
+        intercambiar(&v[medio], &v[dr]);
+    }
+    return medio;
+}
+
 void ordenacionRapidaAuxiliar(int v[], int iz, int dr) {
     int i,j,x,pivote;
     if(iz<dr) {
@@ -89,6 +106,42 @@ void ordenacionRapida(int v[], int n, void(*generador)(int[], int)) {
     generador(v, n);
     ordenacionRapidaAuxiliar(v,0,n-1);
 }
+
+void ordenacionRapidaAuxiliarM3(int v[], int iz, int dr) {
+    int i,j,pivote, indpivote;
+    if(iz<dr) {
+        indpivote = mediana3(v,iz,dr);
+        pivote=v[indpivote];
+        intercambiar(&v[iz],&v[indpivote]);
+        i=iz+1;
+        j=dr;
+        while(i<=j) {
+            while(i<=dr && v[i]<pivote) {
+                i++;
+            }
+            while(v[j]>pivote) {
+                j--;
+            }
+            if(i<=j) {
+                intercambiar(&v[i],&v[j]);
+                i++;
+                j--;
+            }
+        }
+        intercambiar(&v[iz],&v[j]);
+        ordenacionRapidaAuxiliar(v,iz,j-1);
+        ordenacionRapidaAuxiliar(v,j+1,dr);
+    }
+}
+
+void ordenacionRapidaM3(int v[], int n, void(*generador)(int[], int)) {
+    generador(v, n);
+    ordenacionRapidaAuxiliar(v,0,n-1);
+}
+
+
+
+
 
 void imprimirArray(int v[], int n) {
     int i;
@@ -138,6 +191,10 @@ double f1_rapida_ascendente(int n) { return pow(n, 0.90); }
 double f2_rapida_ascendente(int n) { return pow(n, 1.10); }
 double f3_rapida_ascendente(int n) { return pow(n, 1.20); }
 
+double f1_rapida_med3(int n) {return pow(n,0.9);}
+double f2_rapida_med3(int n) {return pow(n,1.1);}
+double f3_rapida_med3(int n) {return pow(n,1.2);}
+
 double f1_insercion_aleatorio(int n) { return pow(n, 1.9); }
 double f2_insercion_aleatorio(int n) { return pow(n, 2); }
 double f3_insercion_aleatorio(int n) { return pow(n, 2.1); }
@@ -183,6 +240,7 @@ int main() {
     mediciones(aleatorio, ordenacionRapida, "Rápida Aleatorio", f1_rapida_aleatorio, f2_rapida_aleatorio, f3_rapida_aleatorio);
     mediciones(descendente, ordenacionRapida, "Rápida Descendente", f1_rapida_descendente, f2_rapida_descendente, f3_rapida_descendente);
     mediciones(ascendente, ordenacionRapida, "Rápida Ascendente", f1_rapida_ascendente, f2_rapida_ascendente, f3_rapida_ascendente);
+    mediciones(aleatorio, ordenacionRapidaM3, "Rapida Mediana de 3", f1_rapida_med3,f2_rapida_med3,f3_rapida_med3 );
 
     mediciones(aleatorio, ordenacionPorInsercion, "Insercion Aleatorio", f1_insercion_aleatorio, f2_insercion_aleatorio, f3_insercion_aleatorio);
     mediciones(descendente, ordenacionPorInsercion, "Insercion Descendente", f1_insercion_descendente, f2_insercion_descendente, f3_insercion_descendente);
