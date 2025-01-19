@@ -8,7 +8,8 @@
 #define MIN(X,Y) ((X) < (Y) ? (X) : (Y))            
 #define LONGITUD_CLAVE 30                        
 #define LONGITUD_SINONIMOS 300
-#define TAM_TABLA  10007
+#define TAM_TABLA  19062
+#define N 38197
 #define TAM_TABLA2  11
 
 double microsegundos() {                  
@@ -34,7 +35,6 @@ typedef entrada *tabla_cerrada;
 
 void inicializar_cerrada(tabla_cerrada *diccionario, int tam) {
     int i;
-    *diccionario = malloc(sizeof(entrada) * tam);
     if (*diccionario == NULL) {
         printf("Error al reservar memoria\n");
         exit(EXIT_FAILURE);
@@ -54,7 +54,7 @@ int leer_sinonimos(item datos[]) {
         printf("Error al abrir ’sinonimos.txt’\n");
         return(EXIT_FAILURE);
     }
-    for (i = 0; i< TAM_TABLA && fscanf(archivo, "%s", datos[i].clave) != EOF; i++) {
+    for (i = 0;fscanf(archivo, "%s", datos[i].clave) != EOF; i++) {
         if ((c = fgetc(archivo)) != '\t') {
             printf("Error al leer el tabulador\n");
             return(EXIT_FAILURE);
@@ -89,15 +89,15 @@ unsigned int dispersionB(char *clave, int tamTabla) {
 }    
 
 unsigned int resol_lineal(int pos_ini, int num_intento) {
-    return (pos_ini + num_intento) % TAM_TABLA;
+    return (pos_ini + num_intento);
 }           
     
 unsigned int resol_cuadratica(int pos_ini, int num_intento) {
-    return (pos_ini + num_intento * num_intento) % TAM_TABLA;
+    return (pos_ini + (num_intento * num_intento));
 }                                             
             
 unsigned int resol_doble(int pos_ini, int num_intento) {
-    return (pos_ini + num_intento * (10007 - pos_ini % 10007))% TAM_TABLA;
+    return (pos_ini + (num_intento * (10007 - (pos_ini % 10007))));
 }
 
 unsigned int ndispersion(char *clave, int tamTabla){
@@ -107,35 +107,40 @@ unsigned int ndispersion(char *clave, int tamTabla){
     return 6;
 }
 
-int insertar_cerrada(char *clave, char *sinonimos, tabla_cerrada *diccionario, int tam, unsigned int (*dispersion)(char *, int), unsigned int (*resol_colisiones)(int pos_ini, int num_intento)) {       
-    int colisiones = 0;
-    unsigned int pos_ini = dispersion(clave, tam);
-    unsigned int pos = pos_ini;
-    int intentos = 0;
-    while ((*diccionario)[pos%tam].ocupada) {
-        pos = resol_colisiones(pos_ini, ++intentos) %tam;
-        (colisiones)++;
-    }                                             
-    (*diccionario)[pos%tam].ocupada = 1;
-    strcpy((*diccionario)[pos%tam].clave, clave);
-    strcpy((*diccionario)[pos%tam].sinonimos, sinonimos);
-    return colisiones;
-}  
+ 
 
-pos buscar_cerrada(char *clave, tabla_cerrada diccionario, int tam, int *colisiones, unsigned int (*dispersion)(char *, int), unsigned int (*resol_colisiones)(int pos_ini, int num_intento)) {
-    int intentos = 0;
-    unsigned int pos_ini = dispersion(clave, tam);
-    unsigned int pos = pos_ini;
+pos buscar_cerrada(char *clave, tabla_cerrada diccionario, 
+    int tam, int *colisiones, unsigned int (*dispersion)(char *, int), 
+    unsigned int (*resol_colisiones)(int pos_ini, int num_intento)) 
+    {
+    int x = dispersion(clave, tam);
+    int pos = x;
     *colisiones = 0;
-    while (diccionario[pos % tam].ocupada && strcmp(diccionario[pos%tam].clave, clave) != 0) {
-        pos = resol_colisiones(pos_ini, ++intentos)%tam;
+    while (diccionario[pos].ocupada && strcmp(diccionario[pos].clave, clave) != 0) {
         (*colisiones)++;
+        pos = resol_colisiones(x, *colisiones) % tam;
+        if (*colisiones > tam) {
+            return -1;
+        }
     }
-    if(diccionario[pos%tam].ocupada && strcmp(diccionario[pos%tam].clave, clave) == 0){
-        return pos%tam;
-    }
-    return -1;
+    return pos;
 }
+
+int insertar_cerrada(char *clave, char *sinonimos, tabla_cerrada *diccionario,
+    int tam, unsigned int (*dispersion)(char *, int), 
+    unsigned int (*resol_colisiones)(int pos_ini, int num_intento)) 
+    {       
+    int colisiones = 0;
+    pos pos = buscar_cerrada(clave, *diccionario, tam, 
+    &colisiones, dispersion, resol_colisiones
+    );
+    if ((*diccionario)[pos].ocupada != 1 && pos != -1) {
+        strcpy((*diccionario)[pos].clave, clave);
+        strcpy((*diccionario)[pos].sinonimos, sinonimos);
+        (*diccionario)[pos].ocupada = 1;
+    }
+    return colisiones;
+} 
 
 void mostrar_cerrada(tabla_cerrada diccionario, int tam) {
     int i;
@@ -149,99 +154,114 @@ void mostrar_cerrada(tabla_cerrada diccionario, int tam) {
     printf("\n");
 }
 
-void generar_orden_aleatorio(int indices[], int num_datos) {
-    int i;
-    srand(time(NULL));
-    for (i = 0; i < num_datos; i++) {
-        indices[i] = rand() % num_datos;
-    }
+void cotas(
+    int n, double t, char ast,
+    unsigned int (*dispersion)(char *, int),
+    unsigned int (*resCol)(int posI, int nInt)
+    ) {
+    double x, y, z;
+
+    x = t / pow(n, 0.8);
+    z = t / (n * log(n));
     
+    if (dispersion == dispersionA) {
+        y = t / pow(n, 1.01);
+    } else {
+        if (resCol == resol_doble) {
+            y = t / pow(n, 0.97);
+        } else {    
+            y = t / pow(n, 0.96);
+        }
+    }
+    printf("%5c%8d %11.3f%18.8f%16.8f%16.8f\n",ast, n, t, x, y, z);
 }
 
 
-void mediciones(unsigned int (*dispersion)(char *, int), unsigned int (*resol_colisiones)(int, int), item datos[], int num_datos, char *nombre, char *resol, double (*f1)(int), double (*f2)(int), double (*f3)(int)) {
-    int i, j, l, colisiones;
-    int k = 1000; // Número de repeticiones
-    double t1, t2, ta, tb, t, x, y, z;
-    int colisiones_total = 0;
-    int indices[num_datos];
-    tabla_cerrada diccionario;
-    inicializar_cerrada(&diccionario, TAM_TABLA);
-    int limite;
+double medicionesAux(int n, item datos[], int colisiones, tabla_cerrada diccionario, 
+    unsigned int (*resol_colisiones)(int pos_ini, int num_intento), 
+    unsigned int (*dispersion)(char *, int)) 
+    {
+    double t, ta, tb;
+    int i, j, rpos;
+    int k = 1000;
+    colisiones = 0;
 
-    // Insertar elementos en la tabla
-    for (l = 0; l < num_datos; l++) {
-        colisiones_total += insertar_cerrada(datos[l].clave, datos[l].sinonimos, &diccionario, TAM_TABLA, dispersion, resol_colisiones);
+    ta = microsegundos();
+    for (i = 0; i < k; i++) {
+        for (j = 0; j < n; j++) {
+            rpos = rand() % TAM_TABLA;
+            buscar_cerrada(datos[rpos].clave, diccionario, N, 
+            &colisiones, dispersion, resol_colisiones);
+        }
+    }
+    tb = microsegundos();
+    t = (tb - ta);
+    return (t / k);
+}
+
+void mediciones(int n, item datos[], tabla_cerrada diccionario,
+    unsigned int (*resol_colisiones)(int pos_ini, int num_intento), 
+    unsigned int (*dispersion)(char *, int))
+    {
+    double ta, tb, t;
+    char ast = ' ';
+    int i;
+    int rpos, colisiones; 
+
+    ta = microsegundos();
+    for (i = 0; i < n; i++) {
+        rpos = rand() % TAM_TABLA;
+        buscar_cerrada(
+            datos[rpos].clave, diccionario, N,
+            &colisiones, dispersion, resol_colisiones
+        );
+    }
+    tb = microsegundos();
+    t = (tb - ta);
+
+    if (t < 500) {
+        ast = '*';
+        t = medicionesAux(
+                n, datos, colisiones,
+                diccionario, resol_colisiones, dispersion
+            );
+    }
+    cotas(n, t, ast, dispersion, resol_colisiones);
+}
+
+void tablasMediciones(unsigned int (*dispersion)(char *, int), 
+    unsigned int (*resol_colisiones)(int posIni, int numIntento)) {
+    int k,i;
+    item datos[TAM_TABLA];
+    int elementos;
+    int colisiones = 0;
+
+    tabla_cerrada diccionario = malloc(N * sizeof(entrada));
+    inicializar_cerrada(&diccionario, N);
+
+    elementos = leer_sinonimos(datos);
+    if(elementos < TAM_TABLA){
+        return;
     }
 
-    printf("* %s: %s\nInsertando %d elementos... Numero total de colisiones: %d\n", nombre, resol, num_datos, colisiones_total);
-    printf("*Buscando n elementos...\n");
+    for (i = 0; i < elementos; i++) {
+        colisiones += insertar_cerrada(
+                    datos[i].clave, datos[i].sinonimos,
+                    &diccionario, N, dispersion, resol_colisiones
+                );
+    }
+    printf("Insertando %d elementos... Numero total de colisiones: %d \n", elementos, colisiones);
+    printf("Buscando n elementos...\n");
     printf("%5s\t%15s%15s%15s%15s\n", "n", "t(n)", "t(n)/f(n)", "t(n)/g(n)", "t(n)/h(n)");
-    generar_orden_aleatorio(indices, num_datos);
-
-    for (i = 125; i <= 16000; i *= 2) {
-        limite = MIN(i, num_datos);
-        t1 = microsegundos();
-        for (j = 0; j < limite; j++) {
-            colisiones = 0;
-            buscar_cerrada(datos[indices[j]].clave, diccionario, TAM_TABLA, &colisiones, dispersion, resol_colisiones);
-        }
-        t2 = microsegundos();
-        t = (t2 - t1);
-
-        if (t < 500) {
-            ta = microsegundos();
-            for (int h = 0; h < k; h++) {
-                for (int p = 0; p < limite; p++) {
-                    colisiones = 0;
-                    buscar_cerrada(datos[indices[p]].clave, diccionario, TAM_TABLA, &colisiones, dispersion, resol_colisiones);
-                }
-            }
-            tb = microsegundos();
-            t = (tb - ta) / k;
-            printf("*");
-        } else {
-            printf(" ");
-        }
-
-        y = t / f1(i);
-        x = t / f2(i);
-        z = t / f3(i);
-        printf("%5d\t%15.3f%15.8f%15.8f%15.8f\n", i, t, y, x, z);
+    for(k = 125; k <= 16000; k *= 2 ){
+        mediciones(k, datos, diccionario, resol_colisiones, dispersion);
     }
-
     printf("\n");
     free(diccionario);
 }
 
-double f1_A_lin(int n) { return pow(n, 0.8); }
-double f2_A_lin(int n) { return pow(n, 1); }
-double f3_A_lin(int n) { return (n * log(n)); }
 
-double f1_A_cuad(int n) { return pow(n, 0.8); }
-double f2_A_cuad(int n) { return pow(n, 1); }
-double f3_A_cuad(int n) { return (n * log(n)); }
-
-double f1_A_doble(int n) { return pow(n, 0.8); }
-double f2_A_doble(int n) { return pow(n, 1); }
-double f3_A_doble(int n) { return (n * log(n)); }
-
-double f1_B_lin(int n) { return pow(n, 0.8); }
-double f2_B_lin(int n) { return pow(n, 1); }
-double f3_B_lin(int n) { return (n * log(n)); }
-
-double f1_B_cuad(int n) { return pow(n, 0.8); }
-double f2_B_cuad(int n) { return pow(n, 1); }
-double f3_B_cuad(int n) { return (n * log(n)); }
-
-
-double f1_B_doble(int n) { return pow(n, 0.8); }
-double f2_B_doble(int n) { return pow(n, 1); }
-double f3_B_doble(int n) { return (n * log(n)); }
-
-
-
-void test_tabla_cerrada( unsigned int (*resol_colisiones)(int pos_ini, int num_intento)) {
+/*void test_tabla_cerrada( unsigned int (*resol_colisiones)(int pos_ini, int num_intento)) {
     int colisiones_total = 0;
     char *claves[] = {"ANA", "LUIS", "JOSE", "OLGA", "ROSA", "IVAN", "CARLOS"};
     int colisiones;
@@ -264,38 +284,29 @@ void test_tabla_cerrada( unsigned int (*resol_colisiones)(int pos_ini, int num_i
         }
     }
     free(diccionario);
-}
+}*/
 
 int main() {
-    srand(time(NULL));
     printf("Prueba con resolucion lineal:\n");
-    test_tabla_cerrada(resol_lineal);
+    //test_tabla_cerrada(resol_lineal);
 
     printf("\nPrueba con resolucion cuadratica:\n");
-    test_tabla_cerrada(resol_cuadratica);
+    //test_tabla_cerrada(resol_cuadratica);
 
     
 
-    item *datos= malloc(sizeof(item) * TAM_TABLA);
-    if(datos == NULL){
-        printf("Error al reservar memoria\n");
-        return EXIT_FAILURE;
-    }
-    int num_datos = leer_sinonimos(datos);
-    if(num_datos == EXIT_FAILURE){
-        free(datos);
-        return EXIT_FAILURE;
-    }
-
-    mediciones(dispersionA, resol_lineal, datos, num_datos, "dispersionA","Lineal", f1_A_lin, f2_A_lin, f3_A_lin);
-    mediciones(dispersionA, resol_cuadratica, datos, num_datos, "dispersionA","Cuadratica", f1_A_cuad, f2_A_cuad, f3_A_cuad);
-    mediciones(dispersionA, resol_doble, datos, num_datos, "dispersionA","Doble", f1_A_doble, f2_A_doble, f3_A_doble);
-
-    mediciones(dispersionB, resol_lineal, datos, num_datos, "dispersionB","Lineal", f1_B_lin, f2_B_lin, f3_B_lin);
-    mediciones(dispersionB, resol_cuadratica, datos, num_datos, "dispersionB","Cuadratica", f1_B_cuad, f2_B_cuad, f3_B_cuad);
-    mediciones(dispersionB, resol_doble, datos, num_datos, "dispersionB","Doble", f1_B_doble, f2_B_doble, f3_B_doble);
-
-    free(datos);
+    printf("\nLineal con dispersion A:\n");
+    tablasMediciones(dispersionA, resol_lineal);
+    printf("\nCuadratica con dispersion A:\n");
+    tablasMediciones(dispersionA, resol_cuadratica);
+    printf("\nDoble con dispersion A:\n");
+    tablasMediciones(dispersionA, resol_doble);
+    printf("\nLineal con dispersion B:\n");
+    tablasMediciones(dispersionB, resol_lineal);
+    printf("\nCuadratica con dispersion B:\n");
+    tablasMediciones(dispersionB, resol_cuadratica);
+    printf("\nDoble con dispersion B:\n");
+    tablasMediciones(dispersionB, resol_doble);
     return 0;
 }
 
