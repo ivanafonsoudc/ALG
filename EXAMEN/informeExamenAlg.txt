@@ -1,0 +1,75 @@
+EXAMEN ALGORITMOS 
+
+Grupo 1.2
+Hecho por: Iván Afonso Cerdeira ivan.afonso@udc.es 
+
+
+En esta prueba se nos proporciona el pseudocódigo de la operacion k-ésimo mayor y se nos pide implementarla, ademas de realizar pruebas con 
+un vector aleatorio para validar su correcto funcionamiento al extraer los elementos en orden descendente de magnitud, y se nos pide ademas,
+que calculemos empiricamente la complejidad de obtener el k-ésimo mayor numero en vectores inicializados aleatoriamente en el caso de k=9 y 
+en el caso de k=n/2.
+
+Para la medición de dichos tiempos de ejecución he utilizado un portátil con las siguientes características:
+	Sistema operativo: Arch Linux
+        Kernel: Linux 6.10.10-arch1-1
+        Architecture: x86-64
+        Hardware Model: ROG Strix G513IC_G513IC  	
+        GPU: NVIDIA Corporation GA107M [GeForce RTX 3050 Mobile]
+        CPU:  	Model name: AMD Ryzen 7 4800H with Radeon Graphics
+              	CPU family:           23
+              	Model:                96
+    		Thread(s) per core:   2
+    		Core(s) per socket:   8
+    		Socket(s):            1
+   		 Stepping:             1
+    		CPU(s) scaling MHz:   43%
+    		CPU max MHz:          4300.0000
+    		CPU min MHz:          400.0000
+        Mem: total:15Gi, used:4.1Gi, free:9.3Gi, shared: 261Mi, 
+             buf/cache: 2.2Gi available: 10Gi
+
+Las cotas ajustadas utilizadas se pueden observar a continuacion:
+	k=9 : n^0.97		k=n/2 : n*log(n)
+
+Las cotas subestimadas utilizadas son las siguientes:
+	k=9 : n^0.8		k=n/2 : n^0.9	
+
+Las cotas sobreestimadas usadas se muestran a continuación:
+        k=9 : n^1.2		k=n/2 : n^1.5
+
+A continuacion se muestran las mediciones, en la unidad de microsegundos(µs):
+
+Para el caso en el que k = 9:
+     	                  subestimada       ajustada  sobreestimada
+    n	          t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+* 4000	        11.710     0.01537766     0.00375440     0.00055727
+* 8000	        21.449     0.01617861     0.00351088     0.00044433
+*16000	        40.986     0.01775594     0.00342486     0.00036957
+*32000	        79.008     0.01965853     0.00337035     0.00031009
+*64000	       154.925     0.02213997     0.00337385     0.00026467
+*128000	       299.842     0.02461071     0.00333349     0.00022297
+256000	       594.000     0.02800235     0.00337127     0.00019226
+
+La constante a la que tiede la cota ajustada es 0.0033
+
+Para el caso en el que k = n/2:
+     	                  subestimada       ajustada  sobreestimada
+    n	          t(n)      t(n)/f(n)      t(n)/g(n)      t(n)/h(n)
+* 4000	       197.367     0.11308888     0.00594905     0.00078016
+* 8000	       453.389     0.13921612     0.00630603     0.00063363
+16000	       985.000     0.16207956     0.00635954     0.00048669
+32000	      2081.000     0.18350044     0.00626898     0.00036354
+64000	      4383.000     0.20711402     0.00618836     0.00027071
+128000	      9339.000     0.23648925     0.00620427     0.00020393
+256000	     19887.000     0.26986919     0.00623818     0.00015354
+
+La constante a la que tiende la cota ajustada es 0.0062
+
+Analizando las tablas conseguidas y la complejidad computacional hallada, se llega a la conclusion de que con valores pequeños de k, como lo es
+en este caso el 9, la complejidad es lineal y por tanto los tiempos conseguidos mas pequeños, mientras que si se utilizan valores mucho mas 
+grandes para k, como lo es en este caso emplear n/2 siendo n el tamaño del vector, la complejidad es n*log(n) y por tanto unos tiempos mayores, 
+concluyendo que en la operacion k-ésimo mayor, el valor de k varia su complejidad computacional.
+
+
+
+

@@ -258,9 +258,9 @@ void medicionesfibBinet() {
         }
 
         // Cálculos de proporciones
-         x = t / (n/sqrt(5));
-            y = t / (1 + sqrt(5)/2);
-            z = t / pow(n, 0.5); 
+        x = t / pow(n, 0.1);
+        y = t / (1 + sqrt(5)/2);
+        z = t / pow(n, 0.5); 
 
         printf("%12d%15.5f%15.6f%15.6f%15.8f\n", n, t, x, y, z);
     }
@@ -313,10 +313,10 @@ void medicionesfibMemo() {
 
 int main(){                                                          
     test();                                                          
-    //medicionesfib1();      
-    //medicionesfib2();
-    //medicionesfib3();   
-    //medicionesfibBinet();
+    medicionesfib1();      
+    medicionesfib2();
+    medicionesfib3();   
+    medicionesfibBinet();
     medicionesfibMemo();
     return 0;
 }

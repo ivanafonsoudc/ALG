@@ -139,6 +139,89 @@ void ordenacionRapidaM3(int v[], int n, void(*generador)(int[], int)) {
     ordenacionRapidaAuxiliar(v,0,n-1);
 }
 
+void ordenacionBurbuja(int v[], int n, void(*generador)(int[], int)) {
+    generador(v, n);
+    int i, j;
+    for(i=0; i<n-1; i++) {
+        for(j=0; j<n-i-1; j++) {
+            if(v[j] > v[j+1]) {
+                intercambiar(&v[j], &v[j+1]);
+            }
+        }
+    }
+}
+
+void ordenacionBurbujaOptimizada(int v[], int n, void(*generador)(int[], int)) {
+    generador(v, n);
+    int i, j;
+    int cambio = 1;
+    for(i=0; i<n-1 && cambio; i++) {
+        cambio = 0;
+        for(j=0; j<n-i-1; j++) {
+            if(v[j] > v[j+1]) {
+                intercambiar(&v[j], &v[j+1]);
+                cambio = 1;
+            }
+        }
+    }
+}
+
+void ordenacionShell(int v[], int n, void(*generador)(int[], int)) {
+    generador(v, n);
+    int i, j, x;
+    for(x=n/2; x>0; x/=2) {
+        for(i=x; i<n; i++) {
+            j = i;
+            while(j>=x && v[j-x]>v[j]) {
+                intercambiar(&v[j-x], &v[j]);
+                j = j - x;
+            }
+        }
+    }
+}
+
+
+
+void ordenacionFusionAuxiliar(int v[], int iz, int dr) {
+    int i, j, k, m;
+    int *aux;
+    if (iz < dr) {
+        m = (iz + dr) / 2;
+        ordenacionFusionAuxiliar(v, iz, m);
+        ordenacionFusionAuxiliar(v, m + 1, dr);
+        aux = (int *)malloc((dr - iz + 1) * sizeof(int));
+        if (aux == NULL) {
+            fprintf(stderr, "Error al asignar memoria\n");
+            exit(EXIT_FAILURE);
+        }
+        for (i = iz; i <= dr; i++) {
+            aux[i - iz] = v[i];
+        }
+        i = iz;
+        j = m + 1;
+        k = iz;
+        while (i <= m && j <= dr) {
+            if (aux[i - iz] <= aux[j - iz]) {
+                v[k++] = aux[i++ - iz];
+            } else {
+                v[k++] = aux[j++ - iz];
+            }
+        }
+        while (i <= m) {
+            v[k++] = aux[i++ - iz];
+        }
+        while (j <= dr) {
+            v[k++] = aux[j++ - iz];
+        }
+        free(aux);
+    }
+}
+
+void ordenacionFusion(int v[], int n, void (*generador)(int[], int)) {
+    generador(v, n);
+    ordenacionFusionAuxiliar(v, 0, n - 1);
+}
+
 
 
 
@@ -207,6 +290,54 @@ double f1_insercion_ascendente(int n) { return pow(n, 0.9); }
 double f2_insercion_ascendente(int n) { return pow(n, 1); }
 double f3_insercion_ascendente(int n) { return pow(n, 1.1); }
 
+double f1_burbuja_aleatorio(int n) { return pow(n, 2); }
+double f2_burbuja_aleatorio(int n) { return pow(n, 2.1); }
+double f3_burbuja_aleatorio(int n) { return pow(n, 2.2); }
+
+double f1_burbuja_descendente(int n) { return pow(n, 2); }
+double f2_burbuja_descendente(int n) { return pow(n, 2.1); }
+double f3_burbuja_descendente(int n) { return pow(n, 2.2); }
+
+double f1_burbuja_ascendente(int n) { return pow(n, 2); }
+double f2_burbuja_ascendente(int n) { return pow(n, 2.1); }
+double f3_burbuja_ascendente(int n) { return pow(n, 2.2); }
+
+double f1_burbuja_optimizada_aleatorio(int n) { return pow(n, 2); }
+double f2_burbuja_optimizada_aleatorio(int n) { return pow(n, 2.1); }
+double f3_burbuja_optimizada_aleatorio(int n) { return pow(n, 2.2); }
+
+double f1_burbuja_optimizada_descendente(int n) { return pow(n, 1.8 ); }
+double f2_burbuja_optimizada_descendente(int n) { return pow(n, 2); }
+double f3_burbuja_optimizada_descendente(int n) { return pow(n, 2.2); }
+
+double f1_burbuja_optimizada_ascendente(int n) { return pow(n, 0.8); }
+double f2_burbuja_optimizada_ascendente(int n) { return pow(n, 1); }
+double f3_burbuja_optimizada_ascendente(int n) { return pow(n, 1.3); }
+
+double f1_shell_aleatorio(int n) { return pow(n, 0.9); }
+double f2_shell_aleatorio(int n) { return pow(n, 1.2); }
+double f3_shell_aleatorio(int n) { return pow(n, 1.4); }
+
+double f1_shell_descendente(int n) { return pow(n, 0.9); }
+double f2_shell_descendente(int n) { return pow(n, 1.1); }
+double f3_shell_descendente(int n) { return pow(n, 1.3); }
+
+double f1_shell_ascendente(int n) { return pow(n, 0.9); }
+double f2_shell_ascendente(int n) { return pow(n, 1.1); }
+double f3_shell_ascendente(int n) { return pow(n, 1.3); }
+
+double f1_fusion_aleatorio(int n) { return pow(n, 0.9); }
+double f2_fusion_aleatorio(int n) { return pow(n, 1.1); }
+double f3_fusion_aleatorio(int n) { return pow(n, 1.3); }
+
+double f1_fusion_descendente(int n) { return pow(n, 0.9); }
+double f2_fusion_descendente(int n) { return pow(n, 1.1); }
+double f3_fusion_descendente(int n) { return pow(n, 1.3); }
+
+double f1_fusion_ascendente(int n) { return pow(n, 0.9); }
+double f2_fusion_ascendente(int n) { return pow(n, 1.1); }
+double f3_fusion_ascendente(int n) { return pow(n, 1.3); }
+
 
 
 
@@ -237,14 +368,30 @@ void test(){
 int main() {
     inicializar_semilla();
     //test();
-    mediciones(aleatorio, ordenacionRapida, "Rápida Aleatorio", f1_rapida_aleatorio, f2_rapida_aleatorio, f3_rapida_aleatorio);
-    mediciones(descendente, ordenacionRapida, "Rápida Descendente", f1_rapida_descendente, f2_rapida_descendente, f3_rapida_descendente);
-    mediciones(ascendente, ordenacionRapida, "Rápida Ascendente", f1_rapida_ascendente, f2_rapida_ascendente, f3_rapida_ascendente);
-    mediciones(aleatorio, ordenacionRapidaM3, "Rapida Mediana de 3", f1_rapida_med3,f2_rapida_med3,f3_rapida_med3 );
+ // mediciones(aleatorio, ordenacionRapida, "Rápida Aleatorio", f1_rapida_aleatorio, f2_rapida_aleatorio, f3_rapida_aleatorio);
+    //mediciones(descendente, ordenacionRapida, "Rápida Descendente", f1_rapida_descendente, f2_rapida_descendente, f3_rapida_descendente);
+    //mediciones(ascendente, ordenacionRapida, "Rápida Ascendente", f1_rapida_ascendente, f2_rapida_ascendente, f3_rapida_ascendente);
+    //mediciones(aleatorio, ordenacionRapidaM3, "Rapida Mediana de 3", f1_rapida_med3,f2_rapida_med3,f3_rapida_med3 );
 
-    mediciones(aleatorio, ordenacionPorInsercion, "Insercion Aleatorio", f1_insercion_aleatorio, f2_insercion_aleatorio, f3_insercion_aleatorio);
-    mediciones(descendente, ordenacionPorInsercion, "Insercion Descendente", f1_insercion_descendente, f2_insercion_descendente, f3_insercion_descendente);
-    mediciones(ascendente, ordenacionPorInsercion, "Insercion Ascendente", f1_insercion_ascendente, f2_insercion_ascendente, f3_insercion_ascendente);
+    //mediciones(aleatorio, ordenacionPorInsercion, "Insercion Aleatorio", f1_insercion_aleatorio, f2_insercion_aleatorio, f3_insercion_aleatorio);
+   // mediciones(descendente, ordenacionPorInsercion, "Insercion Descendente", f1_insercion_descendente, f2_insercion_descendente, f3_insercion_descendente);
+    //mediciones(ascendente, ordenacionPorInsercion, "Insercion Ascendente", f1_insercion_ascendente, f2_insercion_ascendente, f3_insercion_ascendente);
+
+    //mediciones(aleatorio, ordenacionBurbuja, "Burbuja Aleatorio", f1_burbuja_aleatorio, f2_burbuja_aleatorio, f3_burbuja_aleatorio);
+  //  mediciones(descendente, ordenacionBurbuja, "Burbuja Descendente", f1_burbuja_descendente, f2_burbuja_descendente, f3_burbuja_descendente);
+    //mediciones(ascendente, ordenacionBurbuja, "Burbuja Ascendente", f1_burbuja_ascendente, f2_burbuja_ascendente, f3_burbuja_ascendente);
+
+//    mediciones(aleatorio, ordenacionBurbujaOptimizada, "Burbuja Optimizada Aleatorio", f1_burbuja_optimizada_aleatorio, f2_burbuja_optimizada_aleatorio, f3_burbuja_optimizada_aleatorio);
+    mediciones(descendente, ordenacionBurbujaOptimizada, "Burbuja Optimizada Descendente", f1_burbuja_optimizada_descendente, f2_burbuja_optimizada_descendente, f3_burbuja_optimizada_descendente);
+    //mediciones(ascendente, ordenacionBurbujaOptimizada, "Burbuja Optimizada Ascendente", f1_burbuja_optimizada_ascendente, f2_burbuja_optimizada_ascendente, f3_burbuja_optimizada_ascendente);
+
+//    mediciones(aleatorio, ordenacionShell, "Shell Aleatorio", f1_shell_aleatorio, f2_shell_aleatorio, f3_shell_aleatorio);
+  //  mediciones(descendente, ordenacionShell, "Shell Descendente", f1_shell_descendente, f2_shell_descendente, f3_shell_descendente);
+    //mediciones(ascendente, ordenacionShell, "Shell Ascendente", f1_shell_ascendente, f2_shell_ascendente, f3_shell_ascendente);
+
+//    mediciones(aleatorio, ordenacionFusion, "Fusion Aleatorio", f1_fusion_aleatorio, f2_fusion_aleatorio, f3_fusion_aleatorio);
+  //  mediciones(descendente, ordenacionFusion, "Fusion Descendente", f1_fusion_descendente, f2_fusion_descendente, f3_fusion_descendente);
+    //mediciones(ascendente, ordenacionFusion, "Fusion Ascendente", f1_fusion_ascendente, f2_fusion_ascendente, f3_fusion_ascendente);
 
     return 0;
 }
